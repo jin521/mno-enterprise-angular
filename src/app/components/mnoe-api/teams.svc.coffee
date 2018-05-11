@@ -56,12 +56,9 @@ angular.module 'mnoEnterpriseAngular'
       payload = { team: { users: users } }
       MnoeApiSvc.one('teams', teamId).customPUT(payload, '/add_users').then(
         (response) ->
-
           response = response.plain()
           # Update the team's users in the frontend
-
           _.find(_self.teams, {id: teamId}).users.push users...
-
           # return the users
           response.team.users
       )
