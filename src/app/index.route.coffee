@@ -82,6 +82,14 @@ angular.module 'mnoEnterpriseAngular'
         templateUrl: 'app/views/company/company.html'
         controller: 'DashboardCompanyCtrl'
         controllerAs: 'vm'
+      .state 'home.company.members',
+        url: '/members'
+        templateUrl: 'app/views/company/members/organization-members.html'
+        controller: 'DashboardOrganizationMembersCtrl'
+      .state 'home.company.teams',
+        url: '/teams'
+        templateUrl: 'app/views/company/teams/organization-teams.html'
+        controller: 'DashboardOrganizationTeamsCtrl'
       .state 'logout',
         url: '/logout'
         controller: ($window, $http, $translate, AnalyticsSvc, URL_CONFIG) ->

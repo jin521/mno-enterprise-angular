@@ -1,6 +1,6 @@
 angular.module 'mnoEnterpriseAngular'
   .controller('DashboardCompanyCtrl',
-    ($scope, MnoeOrganizations, MnoeTeams, MnoeConfig) ->
+    ($scope, $state, MnoeOrganizations, MnoeTeams, MnoeConfig) ->
       vm = @
 
       #====================================
@@ -32,6 +32,20 @@ angular.module 'mnoEnterpriseAngular'
       vm.isAuditLogShown = ->
         MnoeConfig.isAuditLogEnabled() && MnoeOrganizations.role.isSuperAdmin()
 
+      #====================================
+      # Tab Management
+      #====================================
+      $scope.tabs = [
+        { heading: "tab1", route:"company.members", active:false },
+        { heading: "tab2", route:"company.teams", active:false },
+      ]
+
+      #manage refresh on nested tabs
+      $scope.$on("$stateChangeSuccess", () ->
+        angular.forEach($scope.tabs, (tab) ->
+          tab.active = $state.is(tab.route)
+        )
+      )
       #====================================
       # Post-Initialization
       #====================================
