@@ -123,6 +123,15 @@ ThemeEditorCtrl = ($scope, $window, $log, $timeout,  toastr, themeEditorSvc) ->
       '@dashboard-side-menu-link-active-bg-color':     '@bg-main-color'
     },
 
+    'Dashboard Cart': {
+      '@dashboard-cart-width':             '100px'
+      '@dashboard-cart-height':            '70px'
+      '@dashboard-cart-bg-color':          '@bg-inverse-color'
+      '@dashboard-cart-text-size':         '25px'
+      '@dashboard-cart-border-radius':     '0 0 0 6px'
+      '@dashboard-cart-border-color':      '@text-inverse-color'
+    },
+
     'Dashboard Company Select Box': {
       '@dashboard-cpy-select-width':                    '280px'
       '@dashboard-cpy-select-pic-width':                '50px'
@@ -355,7 +364,7 @@ ThemeEditorCtrl = ($scope, $window, $log, $timeout,  toastr, themeEditorSvc) ->
     # Apply style
     less.modifyVars(vars).then ->
       editor.busy = false
-      theme_action = if opts.published
+      theme_action = if opts.publish
         "published style"
       else if opts.default
         "default style"
@@ -426,7 +435,13 @@ ThemeEditorCtrl = ($scope, $window, $log, $timeout,  toastr, themeEditorSvc) ->
   editor.import = ->
     editor.busy = true
     #loadThemeData(themeEditorSvc.parseLessVars(editor.output))
-    loadThemeData(angular.fromJson([editor.output]))
+    try
+      loadThemeData(JSON.parse(editor.output), false)
+    catch err
+      toastr.error('Error! JSON format is incorrect. Please load correct JSON format')
+      editor.busy = false
+      return
+
     editor.update().then ->
       editor.busy = false
       toastr.info('Theme has been imported')
@@ -484,18 +499,19 @@ ThemeEditorCtrl = ($scope, $window, $log, $timeout,  toastr, themeEditorSvc) ->
         $log.info('No custom theme found')
     )
 
-  loadThemeData = (lessVars) ->
-    data = flattenObject(lessVars)
+  loadThemeData = (lessVars, initial=true) ->
+    # data = flattenObject(lessVars)
+    data = lessVars
 
     _.forEach(theme, (value, key) ->
       if data[key]
-        theme[key] = data[key]
+        theme[key] = if initial then data[key] else data['branding'][key]
     )
 
     _.forEach(variables, (vars, section) ->
       _.forEach(vars, (value, key) ->
-        if data[key]
-          variables[section][key] = data[key]
+        if data[key] || (data['variables'] && data['variables'][section] && data['variables'][section][key])
+          variables[section][key] = if initial then data[key] else data['variables'][section][key]
       )
     )
 

@@ -68,6 +68,18 @@ angular.module 'mnoEnterpriseAngular'
         templateUrl: 'app/views/impac/impac.html'
         controller: 'ImpacController'
         controllerAs: 'vm'
+      .state 'home.apps-management',
+        data:
+          pageTitle:'App Management'
+        url: '/apps-management'
+        templateUrl: 'app/views/apps-management/apps-management.html'
+        controller: 'AppsManagementCtrl'
+        controllerAs: 'vm'
+      .state 'home.app-management',
+        url: '/app/:appId/manage'
+        templateUrl: 'app/views/apps-management/app-management/app-management.html'
+        controller: 'AppManagementCtrl'
+        controllerAs: 'vm'
       .state 'home.account',
         data:
           pageTitle:'Account'
@@ -194,7 +206,7 @@ angular.module 'mnoEnterpriseAngular'
         .state 'home.provisioning.order',
           data:
             pageTitle:'Purchase - Order'
-          url: '/order/?nid&id'
+          url: '/order/:productId?subscriptionId&editAction&cart'
           views: '@home.provisioning':
             templateUrl: 'app/views/provisioning/order.html'
             controller: 'ProvisioningOrderCtrl'
@@ -202,7 +214,7 @@ angular.module 'mnoEnterpriseAngular'
         .state 'home.provisioning.additional_details',
           data:
             pageTitle:'Purchase - Additional details'
-          url: '/details/?nid&id'
+          url: '/details/:productId?subscriptionId&editAction&cart'
           views: '@home.provisioning':
             templateUrl: 'app/views/provisioning/details.html'
             controller: 'ProvisioningDetailsCtrl'
@@ -210,7 +222,7 @@ angular.module 'mnoEnterpriseAngular'
         .state 'home.provisioning.confirm',
           data:
             pageTitle:'Purchase - Confirm'
-          url: '/confirm/?nid&id'
+          url: '/confirm/:productId?subscriptionId&editAction&cart'
           views: '@home.provisioning':
             templateUrl: 'app/views/provisioning/confirm.html'
             controller: 'ProvisioningConfirmCtrl'
@@ -218,7 +230,7 @@ angular.module 'mnoEnterpriseAngular'
         .state 'home.provisioning.order_summary',
           data:
             pageTitle:'Purchase - Order summary'
-          url: '/summary/?nid&id'
+          url: '/summary/:productId?subscriptionId&editAction'
           views: '@home.provisioning':
             templateUrl: 'app/views/provisioning/summary.html'
             controller: 'ProvisioningSummaryCtrl'
@@ -226,14 +238,14 @@ angular.module 'mnoEnterpriseAngular'
         .state 'home.subscriptions',
           data:
             pageTitle:'Subscriptions summary'
-          url: '/subscriptions'
+          url: '/subscriptions/:subType'
           templateUrl: 'app/views/provisioning/subscriptions.html'
           controller: 'ProvisioningSubscriptionsCtrl'
           controllerAs: 'vm'
         .state 'home.subscription',
           data:
             pageTitle:'Subscription details'
-          url: '/subscriptions/:id'
+          url: '/subscription/:id?cart'
           templateUrl: 'app/views/provisioning/subscription.html'
           controller: 'ProvisioningSubscriptionCtrl'
           controllerAs: 'vm'

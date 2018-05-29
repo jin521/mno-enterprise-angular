@@ -6,10 +6,16 @@ angular.module 'mnoEnterpriseAngular'
     templateUrl: 'app/components/mno-app-install-btn/mno-app-install-btn.html',
     controller: ($q, $state, $window, $uibModal, toastr, MnoeMarketplace, MnoeProvisioning, MnoeCurrentUser, MnoeOrganizations, MnoeAppInstances, MnoeConfig) ->
       vm = this
+      vm.arePlansAvailable = true
+      vm.buttonText = ''
+      vm.buttonDisabledTooltip = ''
 
       vm.provisionOrder = () ->
-        MnoeProvisioning.setSubscription({})
-        $state.go('home.provisioning.order', {nid: vm.app.nid})
+        MnoeMarketplace.getApps().then((response) ->
+          product = _.find(response.products, (product) -> product.nid == vm.app.nid)
+          MnoeProvisioning.setSubscription({})
+          $state.go('home.provisioning.order', {productId: product.id, editAction: 'new'})
+        )
 
       # Return the different status of the app regarding its installation
       # - INSTALLABLE:                        The app may be installed
@@ -28,6 +34,35 @@ angular.module 'mnoEnterpriseAngular'
             "INSTALLABLE"
 
       vm.canProvisionApp = false
+
+      vm.buttonDisabled = () ->
+        !vm.canProvisionApp || vm.appInstallationStatus() == "CONFLICT" || !vm.arePlansAvailable
+
+      vm.updateButtonDisabledTooltip = () ->
+        if !vm.canProvisionApp
+          'mno_enterprise.templates.components.app_install_btn.insufficient_privilege'
+        else if !vm.arePlansAvailable
+          'mno_enterprise.templates.dashboard.marketplace.show.no_pricing_plans_found_tooltip'
+
+      vm.updateButtonText = () ->
+        if vm.isExternallyProvisioned
+          'mno_enterprise.templates.dashboard.marketplace.show.provision'
+        else
+          switch vm.appInstallationStatus()
+            when 'CONFLICT' then 'mno_enterprise.templates.components.app_install_btn.conflicting_app'
+            when 'INSTALLABLE' then 'mno_enterprise.templates.components.app_install_btn.start_app'
+            when 'INSTALLED_LAUNCH' then 'mno_enterprise.templates.components.app_install_btn.launch_app'
+            when 'INSTALLED_CONNECT' then 'mno_enterprise.templates.components.app_install_btn.connect_app'
+
+      vm.buttonClick = () ->
+        if !vm.buttonDisabled()
+          if vm.isExternallyProvisioned
+            vm.provisionOrder()
+          else
+            switch vm.appInstallationStatus()
+              when 'INSTALLABLE' then vm.provisionApp()
+              when 'INSTALLED_LAUNCH' then vm.launchAppInstance()
+              when 'INSTALLED_CONNECT' then vm.connectAppInstance()
 
       vm.provisionApp = () ->
         return if !vm.canProvisionApp
@@ -130,6 +165,10 @@ angular.module 'mnoEnterpriseAngular'
             appInstances = response.appInstances
             currentUser = response.currentUser
             products = response.products?.products
+            currency = MnoeOrganizations.selected.organization.billing_currency || MnoeConfig.marketplaceCurrency()
+            plans = vm.app.pricing_plans
+            if !plans[currency]
+              vm.arePlansAvailable = false
 
             # Get number of organizations with at least an admin role
             authorizedOrganizations = _.filter(currentUser.organizations, (org) ->
@@ -162,6 +201,9 @@ angular.module 'mnoEnterpriseAngular'
 
             # Is the product externally provisioned
             vm.isExternallyProvisioned = vm.isProvisioningEnabled && (product?.product_type == 'application' || product?.externally_provisioned)
+
+            vm.buttonText = vm.updateButtonText()
+            vm.buttonDisabledTooltip = vm.updateButtonDisabledTooltip()
         )
 
       return

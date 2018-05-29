@@ -3,9 +3,12 @@ angular.module 'mnoEnterpriseAngular'
 
     vm = this
     vm.isLoading = true
-    MnoeProvisioning.initSubscription({subscriptionId: $stateParams.id})
+    vm.selectedCurrency = MnoeProvisioning.getSelectedCurrency()
+    MnoeProvisioning.initSubscription({subscriptionId: $stateParams.subscriptionId})
       .then((response) -> vm.subscription = response)
       .finally(() -> vm.isLoading = false)
+
+    vm.orderTypeText = 'mno_enterprise.templates.dashboard.provisioning.subscriptions.' + $stateParams.editAction.toLowerCase()
 
     MnoeOrganizations.get().then(
       (response) ->

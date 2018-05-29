@@ -1,34 +1,71 @@
 angular.module 'mnoEnterpriseAngular'
-  .controller('ProvisioningConfirmCtrl', ($scope, $stateParams, $state, MnoeOrganizations, MnoeProvisioning, MnoeAppInstances, MnoeConfig) ->
+  .controller('ProvisioningConfirmCtrl', ($scope, $state, $stateParams, MnoeOrganizations, MnoeProvisioning, MnoeAppInstances, MnoeConfig) ->
 
     vm = this
 
     vm.isLoading = false
-    vm.subscription = MnoeProvisioning.getSubscription()
-    vm.singleBilling = vm.subscription.product.single_billing_enabled
-    vm.billedLocally = vm.subscription.product.billed_locally
+    vm.subscription = MnoeProvisioning.getCachedSubscription()
+    vm.selectedCurrency = MnoeProvisioning.getSelectedCurrency()
+
+    vm.orderTypeText = 'mno_enterprise.templates.dashboard.provisioning.subscriptions.' + $stateParams.editAction.toLowerCase()
+
+    urlParams =
+      subscriptionId: $stateParams.subscriptionId
+      productId: $stateParams.productId
+      editAction: $stateParams.editAction,
+      cart: $stateParams.cart
+
+    vm.editOrder = (reload = true) ->
+      switch $stateParams.editAction.toLowerCase()
+        when 'change', 'new', null
+          $state.go('home.provisioning.order', urlParams, {reload: reload})
+        else
+          $state.go('home.provisioning.additional_details', urlParams, {reload: reload})
 
     # Happens when the user reload the browser during the provisioning workflow.
     if _.isEmpty(vm.subscription)
       # Redirect the user to the first provisioning screen
-      $state.go('home.provisioning.order', {id: $stateParams.id, nid: $stateParams.nid}, {reload: true})
-
-    vm.editOrder = () ->
-      $state.go('home.provisioning.order', {id: $stateParams.id, nid: $stateParams.nid})
-
+      vm.editOrder(true)
+    else
+      vm.singleBilling = vm.subscription.product.single_billing_enabled
+      vm.billedLocally = vm.subscription.product.billed_locally
+      vm.subscription.edit_action = $stateParams.editAction
 
     vm.validate = () ->
       vm.isLoading = true
+      vm.subscription.edit_action = $stateParams.editAction
+      vm.subscription.cart_entry = true if $stateParams.cart == 'true'
+      MnoeProvisioning.saveSubscription(vm.subscription, vm.selectedCurrency).then(
+        (response) ->
+          if $stateParams.cart == 'true' && $stateParams.editAction == 'cancel'
+            MnoeProvisioning.refreshSubscriptions()
+            $state.go("home.subscriptions", {subType: 'cart'})
+          else
+            MnoeProvisioning.setSubscription(response)
+            # Reload dock apps
+            MnoeAppInstances.getAppInstances().then(
+              (response) ->
+                $scope.apps = response
+            )
+            $state.go('home.provisioning.order_summary', {subscriptionId: $stateParams.subscriptionId, editAction: $stateParams.editAction, cart: $stateParams.cart})
+      ).finally(-> vm.isLoading = false)
+
+    vm.addToCart = ->
+      vm.isLoading = true
+      vm.subscription.cart_entry = true
       MnoeProvisioning.saveSubscription(vm.subscription).then(
         (response) ->
-          MnoeProvisioning.setSubscription(response)
-          # Reload dock apps
-          MnoeAppInstances.getAppInstances().then(
-            (response) ->
-              $scope.apps = response
-          )
-          $state.go('home.provisioning.order_summary', {id: $stateParams.id, nid: $stateParams.nid})
+          MnoeProvisioning.refreshSubscriptions()
+          $state.go('home.marketplace')
       ).finally(-> vm.isLoading = false)
+
+    vm.orderEditable = () ->
+      # The order is editable if we are changing the plan, or the product has a custom schema.
+      switch $stateParams.editAction
+        when 'change', 'new'
+          true
+        else
+          if vm.subscription.product?.custom_schema then true else false
 
     MnoeOrganizations.get().then(
       (response) ->

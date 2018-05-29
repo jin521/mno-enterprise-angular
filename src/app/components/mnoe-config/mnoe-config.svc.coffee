@@ -9,6 +9,20 @@ angular.module 'mnoEnterpriseAngular'
         $log.debug("DASHBOARD_CONFIG.impac.enabled missing")
         true
 
+    @isAppManagementEnabled = () ->
+      if DASHBOARD_CONFIG.apps_management?.enabled?
+        DASHBOARD_CONFIG.apps_management.enabled
+      else
+        $log.debug("DASHBOARD_CONFIG.app_management.enabled missing")
+        false
+
+    @isDataSharingEnabled = () ->
+      if DASHBOARD_CONFIG.data_sharing?.enabled?
+        DASHBOARD_CONFIG.data_sharing.enabled
+      else
+        $log.debug("DASHBOARD_CONFIG.data_sharing.enabled missing")
+        false
+
     @isAuditLogEnabled = () ->
       if DASHBOARD_CONFIG.audit_log?.enabled?
         DASHBOARD_CONFIG.audit_log.enabled
@@ -21,6 +35,12 @@ angular.module 'mnoEnterpriseAngular'
         DASHBOARD_CONFIG.organization_management.billing.enabled
       else
         $log.debug("DASHBOARD_CONFIG.organization_management.billing.enabled missing")
+        true
+
+    @isCurrencySelectionEnabled = () ->
+      if DASHBOARD_CONFIG.marketplace?.pricing?.currency_selection?
+        DASHBOARD_CONFIG.marketplace.pricing.currency_selection
+      else
         true
 
     @isDeveloperSectionEnabled = () ->
