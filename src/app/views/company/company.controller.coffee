@@ -17,7 +17,8 @@ angular.module 'mnoEnterpriseAngular'
         if vm.isBillingShown()
           vm.activeTab = 'billing'
         else
-          vm.activeTab = 'members'
+      #On refreshing the page it should stay on the same tab
+          setActiveTab()
 
       vm.isTabSetShown = ->
         !vm.isLoading && (
@@ -35,17 +36,13 @@ angular.module 'mnoEnterpriseAngular'
       #====================================
       # Tab Management
       #====================================
-      $scope.tabs = [
-        { heading: "tab1", route:"company.members", active:false },
-        { heading: "tab2", route:"company.teams", active:false },
-      ]
+      setActiveTab = () ->
+        if $state.is('home.company.members')
+          vm.activeTab = 'members'
 
-      #manage refresh on nested tabs
-      $scope.$on("$stateChangeSuccess", () ->
-        angular.forEach($scope.tabs, (tab) ->
-          tab.active = $state.is(tab.route)
-        )
-      )
+        if $state.is('home.company.teams')
+          vm.activeTab = 'team'
+
       #====================================
       # Post-Initialization
       #====================================
