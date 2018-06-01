@@ -34,7 +34,7 @@
       <!-------------------------------------->
       <!--         Billing Section          -->
       <!-------------------------------------->
-      <div uib-tab index="'billing'" ng-if="vm.isBillingShown()" >
+      <div uib-tab ui-sref="home.company.teams" index="'billing'" ng-if="vm.isBillingShown()" >
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.billing.title' | translate }}</div>
 
         <!-- Directive: DashboardOrganizationArrears -->
@@ -106,7 +106,7 @@
       <!-------------------------------------->
       <!--     Team Management Section      -->
       <!-------------------------------------->
-      <div uib-tab ui-sref="home.company.teams" index="'team'">
+      <div uib-tab ui-sref="home.company.teams" index="'teams'">
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.teams.title' | translate }}</div>
 
         <div class="clearfix">
@@ -143,7 +143,10 @@
       <!-------------------------------------->
       <!--    Company Settings Section      -->
       <!-------------------------------------->
-      <div uib-tab index="'settings'" ng-show="vm.isSettingsShown()" >
+      <!-- <pre>
+        {{vm|json}}
+      </pre> -->
+      <div uib-tab ui-sref="home.company.settings" index="'settings'" ng-show="vm.isSettingsShown()" >
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.settings.title' | translate }}</div>
 
         <div class="well clearfix">

@@ -102,6 +102,14 @@ angular.module 'mnoEnterpriseAngular'
         url: '/teams'
         templateUrl: 'app/views/company/teams/organization-teams.html'
         controller: 'DashboardOrganizationTeamsCtrl'
+      .state 'home.company.settings',
+        url: '/settings'
+        templateUrl: 'app/views/company/settings/organization-settings.html'
+        controller: 'DashboardOrganizationSettingsCtrl'
+      .state 'home.company.billings',
+        url: '/billings'
+        templateUrl: 'app/views/company/billing/organization-billing.html'
+        controller: 'DashboardOrganizationBillingCtrl'
       .state 'logout',
         url: '/logout'
         controller: ($window, $http, $translate, AnalyticsSvc, URL_CONFIG) ->
