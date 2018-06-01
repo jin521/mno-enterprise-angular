@@ -1,11 +1,12 @@
 angular.module 'mnoEnterpriseAngular'
-  .controller('ProvisioningConfirmCtrl', ($scope, $state, $stateParams, MnoeOrganizations, MnoeProvisioning, MnoeAppInstances, MnoeConfig) ->
+  .controller('ProvisioningConfirmCtrl', ($scope, $state, $stateParams, MnoeOrganizations, MnoeProvisioning, MnoeAppInstances, MnoeConfig, ProvisioningHelper, schemaForm) ->
 
     vm = this
 
     vm.isLoading = false
     vm.subscription = MnoeProvisioning.getCachedSubscription()
     vm.selectedCurrency = MnoeProvisioning.getSelectedCurrency()
+    vm.cartItem = $stateParams.cart == 'true'
 
     vm.orderTypeText = 'mno_enterprise.templates.dashboard.provisioning.subscriptions.' + $stateParams.editAction.toLowerCase()
 
@@ -14,6 +15,17 @@ angular.module 'mnoEnterpriseAngular'
       productId: $stateParams.productId
       editAction: $stateParams.editAction,
       cart: $stateParams.cart
+
+    setCustomSchema = () ->
+      parsedSchema = JSON.parse(vm.subscription.product.custom_schema)
+      schema = parsedSchema.json_schema || parsedSchema
+      vm.form = parsedSchema.asf_options || ["*"]
+      schemaForm.jsonref(schema)
+        .then((schema) -> schemaForm.jsonref(schema))
+        .then((schema) -> schemaForm.jsonref(schema))
+        .then((schema) ->
+          vm.schema = schema
+        )
 
     vm.editOrder = (reload = true) ->
       switch $stateParams.editAction.toLowerCase()
@@ -30,15 +42,17 @@ angular.module 'mnoEnterpriseAngular'
       vm.singleBilling = vm.subscription.product.single_billing_enabled
       vm.billedLocally = vm.subscription.product.billed_locally
       vm.subscription.edit_action = $stateParams.editAction
+      # Render custom Schema if it exists
+      setCustomSchema() if vm.subscription.custom_data && vm.subscription.product.custom_schema
 
     vm.validate = () ->
       vm.isLoading = true
       vm.subscription.edit_action = $stateParams.editAction
-      vm.subscription.cart_entry = true if $stateParams.cart == 'true'
+      vm.subscription.cart_entry = true if vm.cartItem
       MnoeProvisioning.saveSubscription(vm.subscription, vm.selectedCurrency).then(
         (response) ->
-          if $stateParams.cart == 'true' && $stateParams.editAction == 'cancel'
-            MnoeProvisioning.refreshSubscriptions()
+          if vm.cartItem
+            MnoeProvisioning.refreshCartSubscriptions()
             $state.go("home.subscriptions", {subType: 'cart'})
           else
             MnoeProvisioning.setSubscription(response)
@@ -55,7 +69,7 @@ angular.module 'mnoEnterpriseAngular'
       vm.subscription.cart_entry = true
       MnoeProvisioning.saveSubscription(vm.subscription).then(
         (response) ->
-          MnoeProvisioning.refreshSubscriptions()
+          MnoeProvisioning.refreshCartSubscriptions()
           $state.go('home.marketplace')
       ).finally(-> vm.isLoading = false)
 
