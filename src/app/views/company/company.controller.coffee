@@ -14,11 +14,7 @@ angular.module 'mnoEnterpriseAngular'
       #====================================
       vm.initialize = ->
         vm.isLoading = false
-        if vm.isBillingShown()
-          vm.activeTab = 'billing'
-        else
-      #On refreshing the page it should stay on the same tab
-          setActiveTab()
+        setActiveTab()
 
       vm.isTabSetShown = ->
         !vm.isLoading && (
@@ -36,12 +32,12 @@ angular.module 'mnoEnterpriseAngular'
       #====================================
       # Tab Management
       #====================================
+      # On refreshing the page it should stay on the same tab
       setActiveTab = () ->
-        if $state.is('home.company.members')
-          vm.activeTab = 'members'
-
-        if $state.is('home.company.teams')
-          vm.activeTab = 'team'
+        if vm.isBillingShown() && $state.is('home.company.billings')
+          vm.activeTab = 'billing'
+        else
+          vm.activeTab = $state.current.name.split(/[.]+/).pop()
 
       #====================================
       # Post-Initialization
