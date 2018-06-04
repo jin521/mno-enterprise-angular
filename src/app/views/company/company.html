@@ -34,7 +34,7 @@
       <!-------------------------------------->
       <!--         Billing Section          -->
       <!-------------------------------------->
-      <div uib-tab ui-sref="home.company.billings" index="'billings'" ng-if="vm.isBillingShown()" >
+      <div uib-tab ui-sref="home.company.billings" ui-sref-active="active" index="'billings'" ng-if="vm.isBillingShown()" >
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.billing.title' | translate }}</div>
 
         <!-- Directive: DashboardOrganizationArrears -->
@@ -90,7 +90,7 @@
       <!-------------------------------------->
       <!--        Members Section           -->
       <!-------------------------------------->
-      <div uib-tab ui-sref="home.company.members" index="'members'">
+      <div uib-tab ui-sref="home.company.members" ui-sref-active="active" index="'members'">
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.members.title' | translate }}</div>
 
         <!-- Directive: DashboardOrganizationMembers -->
@@ -106,7 +106,7 @@
       <!-------------------------------------->
       <!--     Team Management Section      -->
       <!-------------------------------------->
-      <div uib-tab ui-sref="home.company.teams" index="'teams'">
+      <div uib-tab ui-sref="home.company.teams" ui-sref-active="active" index="'teams'">
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.teams.title' | translate }}</div>
 
         <div class="clearfix">
@@ -143,10 +143,7 @@
       <!-------------------------------------->
       <!--    Company Settings Section      -->
       <!-------------------------------------->
-      <!-- <pre>
-        {{vm|json}}
-      </pre> -->
-      <div uib-tab ui-sref="home.company.settings" index="'settings'" ng-show="vm.isSettingsShown()" >
+      <div uib-tab ui-sref="home.company.settings" ui-sref-active="active" index="'settings'" ng-show="vm.isSettingsShown()" >
         <div uib-tab-heading>{{ 'mno_enterprise.templates.dashboard.organization.index.settings.title' | translate }}</div>
 
         <div class="well clearfix">

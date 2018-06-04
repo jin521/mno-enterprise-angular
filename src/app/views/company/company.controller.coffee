@@ -2,7 +2,7 @@ angular.module 'mnoEnterpriseAngular'
   .controller('DashboardCompanyCtrl',
     ($scope, $state, MnoeOrganizations, MnoeTeams, MnoeConfig) ->
       vm = @
-
+      console.log($state)
       #====================================
       # Pre-Initialization
       #====================================
@@ -14,7 +14,8 @@ angular.module 'mnoEnterpriseAngular'
       #====================================
       vm.initialize = ->
         vm.isLoading = false
-        setActiveTab()
+        # On refreshing the page it should stay on the same tab
+        vm.activeTab = $state.current.name.split(/[.]+/).pop()
 
       vm.isTabSetShown = ->
         !vm.isLoading && (
@@ -28,16 +29,6 @@ angular.module 'mnoEnterpriseAngular'
 
       vm.isAuditLogShown = ->
         MnoeConfig.isAuditLogEnabled() && MnoeOrganizations.role.isSuperAdmin()
-
-      #====================================
-      # Tab Management
-      #====================================
-      # On refreshing the page it should stay on the same tab
-      setActiveTab = () ->
-        if vm.isBillingShown() && $state.is('home.company.billings')
-          vm.activeTab = 'billing'
-        else
-          vm.activeTab = $state.current.name.split(/[.]+/).pop()
 
       #====================================
       # Post-Initialization
