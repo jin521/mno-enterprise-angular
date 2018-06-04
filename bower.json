@@ -73,7 +73,8 @@
   },
   "resolutions": {
     "jquery": "~3.1.0",
-    "angular-bootstrap": "^2.5.0",
-    "lodash": "~3.10.1"
+    "angular-bootstrap": "^1.2.1",
+    "lodash": "~3.10.1",
+    "angular-ui-router": "~0.4.0"
   }
 }
