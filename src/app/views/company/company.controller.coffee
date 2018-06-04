@@ -2,7 +2,6 @@ angular.module 'mnoEnterpriseAngular'
   .controller('DashboardCompanyCtrl',
     ($scope, $state, MnoeOrganizations, MnoeTeams, MnoeConfig) ->
       vm = @
-      console.log($state)
       #====================================
       # Pre-Initialization
       #====================================
