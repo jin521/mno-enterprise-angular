@@ -13,8 +13,11 @@ angular.module 'mnoEnterpriseAngular'
       #====================================
       vm.initialize = ->
         vm.isLoading = false
-        # On refreshing the page it should stay on the same tab
-        vm.activeTab = $state.current.name.split(/[.]+/).pop()
+      # On refreshing the page it should stay on the same tab
+        if vm.isBillingShown()
+          vm.activeTab = $state.current.startTab[0]
+        else
+          vm.activeTab = $state.current.startTab[1]
 
       vm.isTabSetShown = ->
         !vm.isLoading && (
